@@ -103,10 +103,11 @@ class TestRepairAndFailure:
         assert "max_steps=3" in result.error
         assert len(result.tool_calls_made) == 3
 
-    def test_llm_contract_violation_captured(self) -> None:
-        result = _agent(["not json at all"]).run("x")
-        assert not result.success
-        assert "not valid JSON" in result.error
+    def test_llm_contract_violation_repaired_then_recovered(self) -> None:
+        # a malformed output gets one bounded repair re-prompt by default
+        result = _agent(["not json at all", _final("recovered")]).run("x")
+        assert result.success
+        assert any(s.kind == "repair" for s in result.steps)
 
     def test_script_exhaustion_captured(self) -> None:
         # agent wants more decisions than scripted, within max_steps budget

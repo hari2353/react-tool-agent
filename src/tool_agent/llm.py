@@ -37,11 +37,12 @@ class ChatLLM(Protocol):
     def name(self) -> str: ...
 
 
-def parse_decision(raw: str) -> ToolCall | tuple[str, str]:
+def parse_decision(raw: str) -> ToolCall | list[ToolCall] | tuple[str, str]:
     """Parse one JSON decision from the LLM.
 
     Returns:
-        ToolCall        - when the LLM wants a tool executed.
+        ToolCall          - when the LLM wants one tool executed.
+        list[ToolCall]    - fan-out form: several calls in one turn.
         ("final", answer) - when the LLM has its final answer.
     Raises:
         LLMError on malformed JSON or unknown action.
@@ -57,6 +58,23 @@ def parse_decision(raw: str) -> ToolCall | tuple[str, str]:
 
     action = payload.get("action")
     if action == "tool":
+        # fan-out form: one decision may request several tool calls
+        if "tools" in payload:
+            entries = payload["tools"]
+            if not isinstance(entries, list) or not entries:
+                msg = "tool action with 'tools' requires at least one call"
+                raise LLMError(msg)
+            calls: list[ToolCall] = []
+            for entry in entries:
+                if not isinstance(entry, dict):
+                    msg = f"each entry of 'tools' must be an object, got: {type(entry).__name__}"
+                    raise LLMError(msg)
+                sub = parse_decision(json.dumps({**entry, "action": "tool"}))
+                if not isinstance(sub, ToolCall):
+                    msg = "entries of 'tools' must be tool calls"
+                    raise LLMError(msg)
+                calls.append(sub)
+            return calls
         tool = payload.get("tool")
         if not tool or not isinstance(tool, str):
             msg = "tool action requires a non-empty 'tool' field"

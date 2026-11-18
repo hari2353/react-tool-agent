@@ -61,9 +61,23 @@ Adding a tool = one `ToolSpec` + one function + `registry.register(...)` — the
 
 ```bash
 pip install -e .[dev]
-pytest                       # 53 tests
+pytest                       # 66 tests
 python scripts/run_agent.py  # the demo above, offline
 ```
+
+## Production loop hardening (market-steal, 2026-11-18)
+
+- **Multi-tool decisions** — a single model turn may fan out to several
+  calls: `{"action": "tool", "tools": [{...}, {...}]}`. Calls execute in
+  order (each validated and traced as its own step pair); one LLM
+  round-trip buys up to `max_tools_per_decision` (default 4) dispatches.
+- **Run budget** — `AgentConfig.max_output_chars` (default 40k) caps the
+  cumulative model output across a run: a deterministic cost proxy on top
+  of `max_steps`. Exceeding it ends the run as a clean captured failure.
+- **Bounded repair re-prompt** — a malformed model output is retried with
+  a format reminder (up to `AgentConfig.max_retries`, default 1) instead
+  of aborting the run on the first bad parse; exhausting retries still
+  ends in a clean captured failure with the parse error.
 
 ### Going live with Azure OpenAI
 
