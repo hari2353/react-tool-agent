@@ -24,7 +24,7 @@ TOOLS USED: ('kb_search', 'unit_convert', 'calculator')
 
 Multi-step tool chaining with retrieval-grounded answers — deterministic on every machine.
 
-**Verified quality bar:** 53 tests (unit + multi-step integration), **99% coverage**, ruff + mypy clean, CI on Python 3.10-3.12 including the demo run above.
+**Verified quality bar:** 67 tests (unit + multi-step integration), **96% coverage**, ruff + mypy clean, CI on Python 3.10-3.12 including the demo run above.
 
 ## Why this design (the interview talking points)
 
