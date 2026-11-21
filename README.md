@@ -89,6 +89,20 @@ export AZURE_OPENAI_DEPLOYMENT="gpt-4o"
 python scripts/run_agent.py --live
 ```
 
+## Durable runs + approvals
+
+```python
+agent.run("q", checkpoint_path="run.json", approve=lambda call: call.tool != "delete")
+agent.resume("run.json", approve=...)      # continues; applied calls never repeat
+```
+
+`JsonCheckpointStore` writes a versioned JSON snapshot atomically after every
+completed step and clears it on a terminal result. A denied call stops with
+`error="tool call denied by human approval"` and an `approval_denied` step
+without executing. `AgentConfig(max_tool_retries=1)` retries `ToolError`s and
+records each attempt. The checkpoint contains the conversation text, so treat
+the file like the prompt itself.
+
 ## Repository layout
 
 ```
