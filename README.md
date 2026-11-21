@@ -103,6 +103,21 @@ without executing. `AgentConfig(max_tool_retries=1)` retries `ToolError`s and
 records each attempt. The checkpoint contains the conversation text, so treat
 the file like the prompt itself.
 
+## Run tokenomics (Harvard Edge agentic-ai cross-pollination)
+
+`tool_agent.cost` converts the loop's character budgets into token and cost
+estimates, so a run can be compared on unit economics, not just step count:
+
+```python
+from tool_agent.cost import RunBudget, estimate_tokens, run_cost
+
+run_cost(estimate_tokens(prompt), estimate_tokens(answer), input_price_per_1m=1.0, output_price_per_1m=2.0)
+RunBudget(budget_tokens=4000, used_tokens=used).remaining
+```
+
+No tokenizer dependency; 4 chars/token by default. Cross-pollinated from
+agentic-ai ch.17 (tokenomics).
+
 ## Repository layout
 
 ```
