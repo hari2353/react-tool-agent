@@ -7,6 +7,7 @@ replace, explicit versioning.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 from dataclasses import dataclass
@@ -129,7 +130,5 @@ class JsonCheckpointStore:
         return checkpoint_from_dict(payload)
 
     def clear(self) -> None:
-        try:
+        with contextlib.suppress(FileNotFoundError):
             self.path.unlink()
-        except FileNotFoundError:
-            pass

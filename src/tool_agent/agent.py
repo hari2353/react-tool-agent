@@ -17,9 +17,10 @@ each tool call before dispatch.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from tool_agent.checkpoint import Checkpoint, JsonCheckpointStore
 from tool_agent.llm import ChatLLM, LLMError, parse_decision
@@ -111,7 +112,8 @@ class ToolAgent:
         state = _State(
             question=question,
             conversation=[
-                {"role": Role.SYSTEM.value, "content": _SYSTEM_PREAMBLE + self._tools.system_prompt()},
+                {"role": Role.SYSTEM.value,
+                 "content": _SYSTEM_PREAMBLE + self._tools.system_prompt()},
                 {"role": Role.USER.value, "content": question},
             ],
         )
@@ -185,7 +187,8 @@ class ToolAgent:
                             f"decision requested {len(decision)} tool calls "
                             f"> max_tools_per_decision={self._config.max_tools_per_decision}"
                         )
-                        state.steps.append(AgentStep(step=state.step_no, kind="llm_response", detail=detail))
+                        state.steps.append(AgentStep(
+                            step=state.step_no, kind="llm_response", detail=detail))
                         return finish(_failure(state.steps, state.calls, detail))
                     state.pending = list(decision)
                     call = state.pending.pop(0)
@@ -268,7 +271,8 @@ class ToolAgent:
                         f"output budget exceeded: {state.used_chars} > "
                         f"{self._config.max_output_chars} chars of model output"
                     )
-                    state.steps.append(AgentStep(step=state.step_no, kind="llm_response", detail=detail))
+                    state.steps.append(AgentStep(
+                        step=state.step_no, kind="llm_response", detail=detail))
                     return None, _failure(state.steps, state.calls, detail)
                 try:
                     return parse_decision(state.raw), None
