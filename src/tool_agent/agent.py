@@ -112,8 +112,10 @@ class ToolAgent:
         state = _State(
             question=question,
             conversation=[
-                {"role": Role.SYSTEM.value,
-                 "content": _SYSTEM_PREAMBLE + self._tools.system_prompt()},
+                {
+                    "role": Role.SYSTEM.value,
+                    "content": _SYSTEM_PREAMBLE + self._tools.system_prompt(),
+                },
                 {"role": Role.USER.value, "content": question},
             ],
         )
@@ -151,19 +153,21 @@ class ToolAgent:
     ) -> AgentResult:
         def save() -> None:
             if store is not None:
-                store.save(Checkpoint(
-                    version=1,
-                    question=state.question,
-                    conversation=tuple(dict(m) for m in state.conversation),
-                    steps=tuple(state.steps),
-                    calls=tuple(state.calls),
-                    step_no=state.step_no,
-                    pending=tuple(state.pending),
-                    used_chars=state.used_chars,
-                    consecutive_errors=state.consecutive_errors,
-                    raw=state.raw,
-                    assistant_echoed=state.assistant_echoed,
-                ))
+                store.save(
+                    Checkpoint(
+                        version=1,
+                        question=state.question,
+                        conversation=tuple(dict(m) for m in state.conversation),
+                        steps=tuple(state.steps),
+                        calls=tuple(state.calls),
+                        step_no=state.step_no,
+                        pending=tuple(state.pending),
+                        used_chars=state.used_chars,
+                        consecutive_errors=state.consecutive_errors,
+                        raw=state.raw,
+                        assistant_echoed=state.assistant_echoed,
+                    )
+                )
 
         def finish(result: AgentResult) -> AgentResult:
             if store is not None:
@@ -187,22 +191,23 @@ class ToolAgent:
                             f"decision requested {len(decision)} tool calls "
                             f"> max_tools_per_decision={self._config.max_tools_per_decision}"
                         )
-                        state.steps.append(AgentStep(
-                            step=state.step_no, kind="llm_response", detail=detail))
+                        state.steps.append(
+                            AgentStep(step=state.step_no, kind="llm_response", detail=detail)
+                        )
                         return finish(_failure(state.steps, state.calls, detail))
                     state.pending = list(decision)
                     call = state.pending.pop(0)
                 elif isinstance(decision, tuple):  # ("final", answer)
                     _, answer = decision
-                    state.steps.append(
-                        AgentStep(step=state.step_no, kind="final", detail=answer)
+                    state.steps.append(AgentStep(step=state.step_no, kind="final", detail=answer))
+                    return finish(
+                        AgentResult(
+                            answer=answer,
+                            steps=tuple(state.steps),
+                            tool_calls_made=tuple(state.calls),
+                            success=True,
+                        )
                     )
-                    return finish(AgentResult(
-                        answer=answer,
-                        steps=tuple(state.steps),
-                        tool_calls_made=tuple(state.calls),
-                        success=True,
-                    ))
                 else:
                     call = decision
 
@@ -240,11 +245,13 @@ class ToolAgent:
                 return finish(failure)
             save()
 
-        return finish(_failure(
-            state.steps,
-            state.calls,
-            f"reached max_steps={self._config.max_steps} without a final answer",
-        ))
+        return finish(
+            _failure(
+                state.steps,
+                state.calls,
+                f"reached max_steps={self._config.max_steps} without a final answer",
+            )
+        )
 
     def _next_decision(
         self,
@@ -271,8 +278,9 @@ class ToolAgent:
                         f"output budget exceeded: {state.used_chars} > "
                         f"{self._config.max_output_chars} chars of model output"
                     )
-                    state.steps.append(AgentStep(
-                        step=state.step_no, kind="llm_response", detail=detail))
+                    state.steps.append(
+                        AgentStep(step=state.step_no, kind="llm_response", detail=detail)
+                    )
                     return None, _failure(state.steps, state.calls, detail)
                 try:
                     return parse_decision(state.raw), None
@@ -342,8 +350,7 @@ class ToolAgent:
                 state.conversation.append(
                     {
                         "role": Role.TOOL.value,
-                        "content": f"tool {call.tool} returned: "
-                        + _summarize(result),
+                        "content": f"tool {call.tool} returned: " + _summarize(result),
                     }
                 )
                 return None

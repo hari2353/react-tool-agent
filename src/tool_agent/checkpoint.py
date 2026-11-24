@@ -40,7 +40,9 @@ def _step_to_dict(step: AgentStep) -> dict[str, Any]:
         "kind": step.kind,
         "tool": step.tool,
         "detail": step.detail,
-        "tool_call": None if step.tool_call is None else {
+        "tool_call": None
+        if step.tool_call is None
+        else {
             "tool": step.tool_call.tool,
             "arguments": step.tool_call.arguments,
         },

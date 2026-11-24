@@ -92,15 +92,12 @@ class TestToolRegistry:
         registry = default_registry(default_store())
         with pytest.raises(ToolError, match="unexpected arguments"):
             registry.dispatch(
-                ToolCall(tool="calculator",
-                         arguments={"expression": "1+1", "extra": "nope"})
+                ToolCall(tool="calculator", arguments={"expression": "1+1", "extra": "nope"})
             )
 
     def test_dispatch_success(self) -> None:
         registry = default_registry(default_store())
-        result = registry.dispatch(
-            ToolCall(tool="calculator", arguments={"expression": "6 * 7"})
-        )
+        result = registry.dispatch(ToolCall(tool="calculator", arguments={"expression": "6 * 7"}))
         assert result == 42.0
 
     def test_tool_spec_validation(self) -> None:

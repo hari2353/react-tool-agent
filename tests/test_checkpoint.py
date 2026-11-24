@@ -109,7 +109,8 @@ def test_approval_accepts_and_runs() -> None:
 def test_tool_retry_succeeds_on_second_attempt() -> None:
     registry = FlakyRegistry(failures=1)
     result = ToolAgent(
-        ScriptedLLM([_tool(), _final("ok")]), registry,
+        ScriptedLLM([_tool(), _final("ok")]),
+        registry,
         AgentConfig(max_tool_retries=1),
     ).run("q")
     assert result.success
@@ -122,7 +123,8 @@ def test_tool_retry_succeeds_on_second_attempt() -> None:
 def test_tool_retry_limit_is_respected() -> None:
     registry = FlakyRegistry(failures=99)
     result = ToolAgent(
-        ScriptedLLM([_tool(), _final("ok")]), registry,
+        ScriptedLLM([_tool(), _final("ok")]),
+        registry,
         AgentConfig(max_tool_retries=0),
     ).run("q")
     assert registry.calls == 1

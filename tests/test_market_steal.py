@@ -28,9 +28,7 @@ def _tool(name: str, **arguments: object) -> str:
 
 
 def _tools(*calls: tuple[str, dict]) -> str:
-    return json.dumps(
-        {"action": "tool", "tools": [{"tool": n, "arguments": a} for n, a in calls]}
-    )
+    return json.dumps({"action": "tool", "tools": [{"tool": n, "arguments": a} for n, a in calls]})
 
 
 def _final(answer: str) -> str:
@@ -71,7 +69,9 @@ class TestMultiToolDecisions:
         result = _agent(script).run("multi")
         assert result.success
         assert [c.tool for c in result.tool_calls_made] == [
-            "kb_search", "unit_convert", "calculator",
+            "kb_search",
+            "unit_convert",
+            "calculator",
         ]
         # one recorded call+result pair per call, in order
         call_steps = [s for s in result.steps if s.kind == "tool_call"]

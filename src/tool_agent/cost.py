@@ -70,6 +70,7 @@ def run_cost(
         "output_cost_usd": token_cost(output_tokens, output_price_per_1m),
         "total_cost_usd": round(
             token_cost(input_tokens, input_price_per_1m)
-            + token_cost(output_tokens, output_price_per_1m), 6
+            + token_cost(output_tokens, output_price_per_1m),
+            6,
         ),
     }

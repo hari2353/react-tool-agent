@@ -13,8 +13,7 @@ from tool_agent.models import ToolCall
 class TestParseDecision:
     def test_valid_tool_call(self) -> None:
         decision = parse_decision(
-            json.dumps({"action": "tool", "tool": "calculator",
-                        "arguments": {"expression": "1+1"}})
+            json.dumps({"action": "tool", "tool": "calculator", "arguments": {"expression": "1+1"}})
         )
         assert decision == ToolCall(tool="calculator", arguments={"expression": "1+1"})
 
@@ -23,9 +22,7 @@ class TestParseDecision:
         assert decision == ToolCall(tool="kb_search", arguments={})
 
     def test_valid_final(self) -> None:
-        decision = parse_decision(
-            json.dumps({"action": "final", "answer": "42"})
-        )
+        decision = parse_decision(json.dumps({"action": "final", "answer": "42"}))
         assert decision == ("final", "42")
 
     def test_invalid_json_rejected(self) -> None:
@@ -50,9 +47,7 @@ class TestParseDecision:
 
     def test_non_dict_arguments_rejected(self) -> None:
         with pytest.raises(LLMError, match="arguments"):
-            parse_decision(
-                json.dumps({"action": "tool", "tool": "calc", "arguments": [1, 2]})
-            )
+            parse_decision(json.dumps({"action": "tool", "tool": "calc", "arguments": [1, 2]}))
 
 
 class TestScriptedLLM:

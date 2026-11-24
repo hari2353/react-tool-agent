@@ -57,7 +57,7 @@ class AgentStep:
     """One recorded step in the agent trace (observability contract)."""
 
     step: int
-    kind: str                 # "llm_response" | "tool_call" | "tool_result" | "final"
+    kind: str  # "llm_response" | "tool_call" | "tool_result" | "final"
     tool: str | None = None
     detail: str = ""
     tool_call: ToolCall | None = None

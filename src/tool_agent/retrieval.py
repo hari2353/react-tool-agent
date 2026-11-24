@@ -16,19 +16,39 @@ _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 _STOPWORDS = frozenset(
     (
-        "a", "an", "and", "are", "as", "at", "be", "by", "for", "from",
-        "has", "have", "in", "is", "it", "its", "of", "on", "or", "that",
-        "the", "this", "to", "was", "were", "will", "with",
+        "a",
+        "an",
+        "and",
+        "are",
+        "as",
+        "at",
+        "be",
+        "by",
+        "for",
+        "from",
+        "has",
+        "have",
+        "in",
+        "is",
+        "it",
+        "its",
+        "of",
+        "on",
+        "or",
+        "that",
+        "the",
+        "this",
+        "to",
+        "was",
+        "were",
+        "will",
+        "with",
     )
 )
 
 
 def _tokenize(text: str) -> list[str]:
-    return [
-        tok
-        for tok in _TOKEN_RE.findall(text.lower())
-        if tok not in _STOPWORDS
-    ]
+    return [tok for tok in _TOKEN_RE.findall(text.lower()) if tok not in _STOPWORDS]
 
 
 @dataclass(frozen=True, slots=True)
@@ -110,9 +130,7 @@ class TfIdfStore:
         hits: list[dict[str, object]] = []
         for score, idx in scored[:top_k]:
             passage = self.passages[idx]
-            snippet = (
-                passage.text[:280] + ("..." if len(passage.text) > 280 else "")
-            )
+            snippet = passage.text[:280] + ("..." if len(passage.text) > 280 else "")
             hits.append(
                 {
                     "doc_id": passage.doc_id,
@@ -150,7 +168,7 @@ KB_CORPUS: tuple[tuple[str, str, str], ...] = (
         "to the sourcing director weekly.",
     ),
     (
-    "risk-bands",
+        "risk-bands",
         "Supplier risk bands",
         "Suppliers are banded low, medium, high, or critical based on the "
         "weighted risk score. Scores above 60 land in the high band and above "
@@ -158,7 +176,7 @@ KB_CORPUS: tuple[tuple[str, str, str], ...] = (
         "approval limits, and payment terms.",
     ),
     (
-    "onboarding",
+        "onboarding",
         "New supplier onboarding requirements",
         "New suppliers must pass a documentation screen, sign the supplier "
         "code of conduct, and complete a screening questionnaire before the "

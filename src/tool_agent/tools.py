@@ -143,9 +143,7 @@ class ToolRegistry:
     def __init__(self) -> None:
         self._tools = {}
 
-    def register(
-        self, spec: ToolSpec, fn: Callable[..., Any], *, replace: bool = False
-    ) -> None:
+    def register(self, spec: ToolSpec, fn: Callable[..., Any], *, replace: bool = False) -> None:
         if not replace and spec.name in self._tools:
             msg = f"tool {spec.name!r} already registered"
             raise ToolError(msg)
@@ -158,18 +156,14 @@ class ToolRegistry:
         """Render tool documentation for the system message."""
         lines = ["You can call these tools, one at a time:"]
         for spec, _ in self._tools.values():
-            params = (
-                ", ".join(f"{k}: {v}" for k, v in spec.parameters.items())
-                or "none"
-            )
+            params = ", ".join(f"{k}: {v}" for k, v in spec.parameters.items()) or "none"
             lines.append(
                 f"- {spec.name}({params}): {spec.description}\n"
                 f'  respond with {{"action": "tool", "tool": "{spec.name}", '
                 '"arguments": {...}}}'
             )
         lines.append(
-            "When you have enough information, respond with "
-            '{"action": "final", "answer": "..."}.'
+            'When you have enough information, respond with {"action": "final", "answer": "..."}.'
         )
         return "\n".join(lines)
 
@@ -217,8 +211,7 @@ def default_registry(store: TfIdfStore) -> ToolRegistry:
         unit_convert,
     )
     kb_description = (
-        "Search the supplier-compliance knowledge base and get the top "
-        "matching passages."
+        "Search the supplier-compliance knowledge base and get the top matching passages."
     )
     registry.register(
         ToolSpec(

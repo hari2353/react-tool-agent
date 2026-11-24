@@ -67,7 +67,7 @@ class TestRepairAndFailure:
     def test_agent_recovers_from_bad_tool_call(self) -> None:
         """LLM hallucinates an unknown tool, gets the error, repairs."""
         script = [
-            _tool("web_search", query="supplier policy"),          # unknown tool
+            _tool("web_search", query="supplier policy"),  # unknown tool
             _tool("kb_search", query="supplier policy", top_k=1),  # repair
             _final("found it"),
         ]
@@ -79,8 +79,8 @@ class TestRepairAndFailure:
 
     def test_agent_recovers_from_missing_arguments(self) -> None:
         script = [
-            _tool("calculator"),                       # missing 'expression'
-            _tool("calculator", expression="2+2"),      # repair
+            _tool("calculator"),  # missing 'expression'
+            _tool("calculator", expression="2+2"),  # repair
             _final("4"),
         ]
         result = _agent(script).run("compute 2+2")
@@ -89,7 +89,10 @@ class TestRepairAndFailure:
 
     def test_three_consecutive_failures_abort(self) -> None:
         script = [
-            _tool("nope1"), _tool("nope2"), _tool("nope3"), _final("never reached"),
+            _tool("nope1"),
+            _tool("nope2"),
+            _tool("nope3"),
+            _final("never reached"),
         ]
         result = _agent(script).run("x")
         assert not result.success
